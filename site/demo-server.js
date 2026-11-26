@@ -11,7 +11,7 @@
   "use strict";
   if (!/(^|[?&])demo(=|&|$)/.test(location.search.slice(1))) return;
 
-  var DBK = "sesame-demo.db", VERSION = 4;
+  var DBK = "sesame-demo.db", VERSION = 5;
   var DEMO = {
     mailCode: "123456", studentPin: "246810", agentPin: "2580", adminPw: "demo-sesame",
     email: "camille.martin@essec.edu"
@@ -127,6 +127,11 @@
     var db = null;
     try { db = JSON.parse(localStorage.getItem(DBK) || "null"); } catch (e) { db = null; }
     if (!db || db.v !== VERSION) {
+      // Nouvelle version de la démo : on repart de zéro (déconnexion comprise).
+      try {
+        Object.keys(localStorage).forEach(function (k) { if (k.indexOf("sesame-demo.") === 0) localStorage.removeItem(k); });
+        Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf("sesame-demo.") === 0) sessionStorage.removeItem(k); });
+      } catch (e) {}
       db = seed(); save(db);
       // La démo commence à l'écran de connexion par mail.
       try { localStorage.setItem("sesame-demo.install.dismissed", "1"); } catch (e) {}   // pas de bandeau « installer » en démo

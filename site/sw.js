@@ -1,6 +1,6 @@
 // Sésame — service worker : rend l'appli installable et la charge vite.
 // Les vérifications (QR, PIN) passent toujours par internet : rien n'est mis en cache côté données.
-const CACHE = "sesame-v10";
+const CACHE = "sesame-v11";
 const SHELL = [
   "./", "index.html", "style.css", "common.js", "app.js", "config.js", "admin.html", "admin.js", "demo-server.js", "demo.html",
   "vendor/qrcode.js", "vendor/jsQR.js", "manifest.webmanifest",
