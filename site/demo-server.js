@@ -11,7 +11,7 @@
   "use strict";
   if (!/(^|[?&])demo(=|&|$)/.test(location.search.slice(1))) return;
 
-  var DBK = "sesame-demo.db", AUTHK = "sesame-demo.auth", VERSION = 3;
+  var DBK = "sesame-demo.db", VERSION = 4;
   var DEMO = {
     mailCode: "123456", studentPin: "246810", agentPin: "2580", adminPw: "demo-sesame",
     email: "camille.martin@essec.edu"
@@ -128,12 +128,8 @@
     try { db = JSON.parse(localStorage.getItem(DBK) || "null"); } catch (e) { db = null; }
     if (!db || db.v !== VERSION) {
       db = seed(); save(db);
-      // Camille est déjà connectée : la démo commence directement sur sa carte.
-      try {
-        localStorage.setItem(AUTHK, JSON.stringify({ access_token: "demo|" + DEMO.email, refresh_token: "demo|" + DEMO.email,
-          expires_at: Math.floor(now() / 1000) + 30 * 86400, email: DEMO.email }));
-        localStorage.setItem("sesame-demo.install.dismissed", "1");   // pas de bandeau « installer » en démo
-      } catch (e) {}
+      // La démo commence à l'écran de connexion par mail.
+      try { localStorage.setItem("sesame-demo.install.dismissed", "1"); } catch (e) {}   // pas de bandeau « installer » en démo
     }
     return db;
   }
@@ -419,11 +415,12 @@
     var db = load();
     return new Promise(function (res) { setTimeout(res, 180 + Math.random() * 220); }).then(function () {   // petit délai « réseau »
       if (path === "/auth/v1/otp") {
-        if (!allowed(db, String(body.email || "").toLowerCase())) return {};
+        fakeMail(String(body.email || "").toLowerCase());
         return {};
       }
       if (path === "/auth/v1/verify") {
         if (body.token !== DEMO.mailCode) return Promise.reject({ status: 403, body: { error_code: "otp_expired", msg: "Token has expired or is invalid" }, code: "SERVER" });
+        var mail = document.querySelector(".demo-mail"); if (mail) mail.onclick();   // le mail a servi : on le range
         return session(String(body.email || "").toLowerCase());
       }
       if (path.indexOf("/auth/v1/token") === 0) { var e = emailOf(body.refresh_token); return e ? session(e) : Promise.reject({ status: 400, body: {}, code: "SERVER" }); }
@@ -436,6 +433,23 @@
       if (fn.indexOf("admin_") === 0 && body.p_pw !== db.settings.admin_password) return { error: "bad" };
       return f(db, body, email);
     });
+  }
+
+  /* ---------- faux mail : montre le code qu'un vrai étudiant recevrait ---------- */
+  function fakeMail(to) {
+    var old = document.querySelector(".demo-mail"); if (old) old.remove();
+    var m = document.createElement("div");
+    m.className = "demo-mail";
+    m.setAttribute("role", "status");
+    m.innerHTML = '<div class="demo-mail-head"><span class="demo-mail-ico">✉</span><b>Nouveau mail</b><span>à l\'instant</span></div>'
+      + '<div class="demo-mail-from">Sésame · à ' + to.replace(/[<>&"]/g, "") + '</div>'
+      + '<div class="demo-mail-subj">Votre code Sésame</div>'
+      + '<div class="demo-mail-code">' + DEMO.mailCode + '</div>'
+      + '<div class="demo-mail-note">Démo : dans la vraie appli, ce code arrive dans la boîte mail de l\'école.</div>';
+    m.onclick = function () { m.classList.add("out"); setTimeout(function () { m.remove(); }, 300); };
+    document.body.appendChild(m);
+    setTimeout(function () { m.classList.add("in"); }, 30);
+    setTimeout(function () { if (m.isConnected) m.onclick(); }, 9000);   // disparaît comme une notification
   }
 
   window.SesameDemo = { call: call, reset: reset, creds: DEMO, load: load, hmacHex: hmacHex };
@@ -463,11 +477,11 @@
 
     // Le code de démo est écrit en clair sous chaque champ, avec un bouton pour le remplir
     // (dans le champ lui-même, le texte était coupé sur petit écran).
-    function hintUnder(inputSel, label, value) {
+    function hintUnder(inputSel, label, value, shown) {
       var input = q(inputSel), p = document.createElement("p");
-      input.placeholder = value;
+      if (!shown) input.placeholder = value;
       p.className = "demo-fill";
-      p.innerHTML = "<span>" + label + " <code>" + value + "</code></span>";
+      p.innerHTML = "<span>" + label + " " + (shown || "<code>" + value + "</code>") + "</span>";
       var b = document.createElement("button");
       b.type = "button"; b.textContent = "Remplir";
       b.onclick = function () { input.value = value; input.dispatchEvent(new Event("input")); input.focus(); };
@@ -475,11 +489,10 @@
       var lbl = input.closest("label") || input;
       lbl.parentNode.insertBefore(p, lbl.nextSibling);
     }
+    hintUnder("#e-email", "Démo : connectez-vous comme", DEMO.email, "<b>Camille Martin</b>, étudiante fictive");
     hintUnder("#c-pin", "Démo : le code de Camille est", DEMO.studentPin);
     hintUnder("#pin", "Démo : le PIN agent est", DEMO.agentPin);
     hintUnder("#k-code", "Démo : le code reçu par mail est", DEMO.mailCode);
-    var lead = q("#s-code .lead");
-    if (lead) lead.insertAdjacentHTML("beforeend", "<br><b>Démo :</b> aucun mail n'est envoyé, le code est <b>" + DEMO.mailCode + "</b>.");
 
     // Côté agent : « scanner » le QR affiché côté étudiant, sans caméra.
     var box = document.createElement("div");

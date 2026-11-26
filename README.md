@@ -33,8 +33,11 @@ Une carte étudiante 100 % numérique serait idéale, mais elle est hors de port
 
 La démo affiche les deux téléphones côte à côte, avec des profils fictifs. Rien n'est envoyé en ligne.
 
+La démo commence comme pour un vrai étudiant : connexion avec l'adresse mail de l'école, puis le code reçu par mail. Ici, le mail est simulé à l'écran.
+
 | | Code |
 |---|---|
+| Code reçu par mail | `123456` |
 | Code personnel de Camille (étudiante) | `246810` |
 | PIN du poste agent | `2580` |
 | Espace sécurité (admin) | `demo-sesame` |
