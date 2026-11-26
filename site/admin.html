@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sésame · Espace sécurité</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0A2B4E">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="wide">
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">Sésame<small>Espace sécurité</small></div>
+    <button class="linkish" id="logout" hidden>Se déconnecter</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="note warn" id="cfgwarn" hidden>L'appli n'est pas encore reliée à sa base de données (config.js).</p>
+
+  <!-- Connexion -->
+  <div class="panel login" id="a-login">
+    <div><h1 class="h">Espace sécurité</h1><p class="lead">Suivi des passages et gestion des comptes Sésame.</p></div>
+    <form id="f-login" novalidate>
+      <label class="f">Mot de passe admin<input type="password" id="a-pw" autocomplete="current-password"></label>
+      <p class="err" id="a-err" hidden></p>
+      <button class="btn" type="submit" id="a-submit">Se connecter</button>
+    </form>
+    <a class="linkish center" href="./">Retour à l'appli</a>
+  </div>
+
+  <div class="stack" id="a-main" hidden>
+    <p class="note warn" id="a-default" hidden>Le mot de passe admin est encore celui par défaut. Changez-le dans <b>Réglages</b>.</p>
+
+    <nav class="admin-nav" role="tablist">
+      <button role="tab" data-tab="overview" aria-selected="true">Vue d'ensemble</button>
+      <button role="tab" data-tab="history" aria-selected="false">Historique</button>
+      <button role="tab" data-tab="students" aria-selected="false">Étudiants</button>
+      <button role="tab" data-tab="settings" aria-selected="false">Réglages</button>
+    </nav>
+
+    <!-- Vue d'ensemble -->
+    <section class="stack" id="t-overview">
+      <div class="kpis">
+        <div class="kpi ok"><span class="eyebrow">Aujourd'hui</span><span class="v" id="k-today-ok">–</span><span class="s">passages autorisés</span></div>
+        <div class="kpi bad"><span class="eyebrow">Aujourd'hui</span><span class="v" id="k-today-bad">–</span><span class="s">scans refusés</span></div>
+        <div class="kpi"><span class="eyebrow">Cette semaine</span><span class="v" id="k-week-ok">–</span><span class="s" id="k-week-s">passages autorisés</span></div>
+        <div class="kpi"><span class="eyebrow">Inscrits</span><span class="v" id="k-students">–</span><span class="s" id="k-students-s">étudiants</span></div>
+      </div>
+      <div class="panel">
+        <div class="row-end">
+          <h2 class="h">14 derniers jours</h2>
+          <div class="legend"><span><i style="background:var(--ok)"></i>Autorisés</span><span><i style="background:var(--bad)"></i>Refusés</span></div>
+        </div>
+        <div id="chart"></div>
+      </div>
+      <div class="panel">
+        <div class="row-end"><h2 class="h">Derniers scans</h2><button class="linkish" data-goto="history">Tout l'historique</button></div>
+        <div class="table-wrap"><table class="t"><thead><tr><th>Date</th><th>Heure</th><th>Étudiant·e</th><th>B00</th><th>Résultat</th></tr></thead><tbody id="o-last"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- Historique -->
+    <section class="stack" id="t-history" hidden>
+      <div class="panel">
+        <form class="filters" id="f-hist" novalidate>
+          <label class="f">Rechercher<input type="search" id="h-q" placeholder="Nom, prénom ou B00"></label>
+          <label class="f">Du<input type="date" id="h-from"></label>
+          <label class="f">Au<input type="date" id="h-to"></label>
+          <button class="btn" type="submit">Filtrer</button>
+        </form>
+        <div class="row-end">
+          <span class="meta" id="h-count"></span>
+          <button class="btn ghost small" id="h-csv">Exporter en CSV</button>
+        </div>
+        <div class="table-wrap"><table class="t"><thead><tr><th>Date</th><th>Heure</th><th>Étudiant·e</th><th>B00</th><th>Code QR</th><th>Résultat</th></tr></thead><tbody id="h-rows"></tbody></table></div>
+        <button class="btn ghost" id="h-more" hidden>Afficher plus</button>
+        <p class="err" id="h-err" hidden></p>
+      </div>
+    </section>
+
+    <!-- Étudiants -->
+    <section class="stack" id="t-students" hidden>
+      <div class="panel" id="sd" hidden>
+        <div class="row-end"><h2 class="h" id="sd-name"></h2><button class="linkish" id="sd-close">Fermer</button></div>
+        <div class="student-detail">
+          <img id="sd-photo" alt="">
+          <div class="stack">
+            <dl class="facts">
+              <dt>B00</dt><dd class="b00" id="sd-b00"></dd>
+              <dt>Mail</dt><dd id="sd-email"></dd>
+              <dt>Inscrit·e le</dt><dd id="sd-created"></dd>
+              <dt>Accord RGPD</dt><dd id="sd-consent"></dd>
+              <dt>Code personnel</dt><dd id="sd-pin"></dd>
+            </dl>
+            <div class="chips" id="sd-chips"></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn small" id="sd-block"></button>
+          <button class="btn ghost small" id="sd-reset">Remettre le compteur de la semaine à zéro</button>
+          <button class="btn ghost small" id="sd-photo-btn">Demander une nouvelle photo</button>
+          <button class="btn ghost small" id="sd-pin-btn">Réinitialiser le code personnel</button>
+          <button class="btn ghost small danger-btn" id="sd-del">Supprimer le compte</button>
+        </div>
+        <div class="confirm" id="sd-confirm" hidden>
+          <p>Le profil, la photo et les QR de cet étudiant seront supprimés. L'historique des passages est conservé.</p>
+          <div class="confirm-actions"><button class="btn small danger-solid" id="sd-del-yes">Oui, supprimer</button><button class="linkish" id="sd-del-no">Annuler</button></div>
+        </div>
+        <p class="ok-msg" id="sd-ok" hidden></p>
+        <p class="err" id="sd-err" hidden></p>
+        <div>
+          <div class="eyebrow">50 derniers scans</div>
+          <ul class="vweek-list" id="sd-scans"></ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <form class="manual" id="f-stu" novalidate>
+          <input type="search" id="s-q" placeholder="Rechercher : nom, B00 ou mail" aria-label="Rechercher un étudiant">
+          <button class="btn" type="submit">Rechercher</button>
+        </form>
+        <span class="meta" id="s-count"></span>
+        <div class="table-wrap"><table class="t"><thead><tr><th>Étudiant·e</th><th>B00</th><th>QR semaine</th><th>Passages</th><th>Dernier passage</th><th>Statut</th></tr></thead><tbody id="s-rows"></tbody></table></div>
+        <p class="err" id="s-err" hidden></p>
+      </div>
+    </section>
+
+    <!-- Réglages -->
+    <section class="stack" id="t-settings" hidden>
+      <div class="settings">
+        <div class="panel setting">
+          <h2 class="h">QR par semaine</h2>
+          <p class="lead">Nombre maximum de QR qu'un étudiant peut générer du lundi au dimanche.</p>
+          <form id="f-limit" novalidate><div class="inline"><input type="number" id="set-limit" min="1" max="99" inputmode="numeric" aria-label="QR par semaine"><button class="btn" type="submit">Enregistrer</button></div>
+          <p class="ok-msg" hidden></p><p class="err" hidden></p></form>
+        </div>
+        <div class="panel setting">
+          <h2 class="h">Code PIN des agents</h2>
+          <p class="lead">4 à 8 chiffres. Les agents connectés devront saisir le nouveau code.</p>
+          <form id="f-pin" novalidate><div class="inline"><input type="text" id="set-pin" inputmode="numeric" autocomplete="off" aria-label="Code PIN des agents"><button class="btn" type="submit">Enregistrer</button></div>
+          <p class="ok-msg" hidden></p><p class="err" hidden></p></form>
+        </div>
+        <div class="panel setting">
+          <h2 class="h">Adresses autorisées</h2>
+          <p class="lead">Seules les adresses de ce domaine peuvent s'inscrire. Laissez vide pour toutes les accepter (tests).</p>
+          <form id="f-domain" novalidate><div class="inline"><input type="text" id="set-domain" placeholder="essec.edu" autocomplete="off" aria-label="Domaine des adresses mail"><button class="btn" type="submit">Enregistrer</button></div>
+          <p class="ok-msg" hidden></p><p class="err" hidden></p></form>
+        </div>
+        <div class="panel setting">
+          <h2 class="h">Mot de passe admin</h2>
+          <p class="lead">8 caractères minimum.</p>
+          <form id="f-pw" novalidate>
+            <input type="password" id="set-pw" autocomplete="new-password" placeholder="Nouveau mot de passe" aria-label="Nouveau mot de passe">
+            <input type="password" id="set-pw2" autocomplete="new-password" placeholder="Confirmer" aria-label="Confirmer le mot de passe">
+            <button class="btn" type="submit">Changer le mot de passe</button>
+            <p class="ok-msg" hidden></p><p class="err" hidden></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="foot">Sésame · prototype étudiant, non officiel</footer>
+</main>
+
+<script src="config.js"></script>
+<script src="demo-server.js"></script>
+<script src="common.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

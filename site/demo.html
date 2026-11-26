@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sésame · démo interactive</title>
+<meta name="description" content="Démo de Sésame : un pass campus à usage unique pour les étudiants qui ont oublié leur carte. Profils fictifs, sans compte.">
+<meta name="theme-color" content="#0A2B4E">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root{--brand:#0A2B4E;--brand-2:#1DA1E0;--paper:#F2F5F9;--ink:#0E1B2C;--muted:#5A6779;--line:#D6DEE8;--soft:#E4F2FB;
+    --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;--f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);line-height:1.5}
+  header{background:var(--brand);color:#fff;border-bottom:3px solid var(--brand-2)}
+  .in{max-width:1180px;margin:0 auto;padding:0 20px}
+  .hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding-block:26px 22px}
+  .brand{font-family:var(--f-display);font-weight:800;font-size:2rem;letter-spacing:-.01em;line-height:1}
+  .brand small{display:block;font:500 .75rem var(--f-body);letter-spacing:.08em;text-transform:uppercase;opacity:.8;margin-top:6px}
+  .pitch{max-width:560px;margin:0;font-size:1rem;opacity:.92}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px auto 6px}
+  .step{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:.92rem}
+  .step b{font-family:var(--f-display);display:block;margin-bottom:2px}
+  .step .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font:700 .8rem var(--f-display);margin-right:6px}
+  code{font-family:var(--f-mono);font-weight:700;background:var(--soft);border-radius:5px;padding:0 6px}
+  .stage{display:flex;justify-content:center;align-items:flex-start;gap:36px;margin:22px auto 10px;flex-wrap:wrap}
+  .device{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .device h2{margin:0;font:700 1rem var(--f-display);letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+  .phone{width:390px;height:780px;border-radius:44px;background:#0B1420;padding:12px;box-shadow:0 24px 60px rgba(10,43,78,.28),inset 0 0 0 2px #2A3A50}
+  .phone iframe{width:100%;height:100%;border:0;border-radius:33px;background:var(--paper);display:block}
+  .arrow{align-self:center;font:800 2rem var(--f-display);color:var(--brand-2)}
+  .actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:18px 0 8px}
+  .btn{font:600 .95rem var(--f-body);border-radius:10px;padding:12px 18px;border:1px solid var(--brand);background:var(--brand);color:#fff;text-decoration:none;cursor:pointer}
+  .btn.ghost{background:#fff;color:var(--brand)}
+  .foot{text-align:center;color:var(--muted);font-size:.85rem;padding:16px 20px 40px}
+  .foot a{color:#0B6FA4}
+  @media (max-width:900px){
+    .steps{grid-template-columns:1fr}.arrow{display:none}
+    .phone{width:min(390px,94vw);height:720px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="in hero">
+    <div class="brand">Sésame<small>Démo interactive · profils fictifs</small></div>
+    <p class="pitch">Un pass campus à usage unique pour les jours où l'on a oublié sa carte étudiante. L'étudiant·e génère un QR, l'agent de sécurité le scanne et voit sa photo. Essayez les deux côtés ci-dessous.</p>
+  </div>
+</header>
+
+<main class="in">
+  <div class="steps">
+    <div class="step"><span class="n">1</span><b>Côté étudiant·e</b>Cliquez sur « Générer mon QR » et tapez le code personnel de Camille : <code>246810</code>. Le QR change toutes les 10 secondes.</div>
+    <div class="step"><span class="n">2</span><b>Côté agent</b>Déverrouillez avec le PIN <code>2580</code>, puis « Scanner le QR ». L'agent voit la photo, le nom et le verdict.</div>
+    <div class="step"><span class="n">3</span><b>Essayez de tricher</b>Rescannez : « Déjà utilisé ». Ou « Tester une capture d'écran » : un QR vieux de 30 s est refusé.</div>
+  </div>
+
+  <div class="stage">
+    <div class="device"><h2>Téléphone de l'étudiant·e</h2><div class="phone"><iframe id="f-etu" title="Appli étudiant" src="index.html?demo#etudiant"></iframe></div></div>
+    <div class="arrow" aria-hidden="true">→</div>
+    <div class="device"><h2>Téléphone de l'agent</h2><div class="phone"><iframe id="f-agent" title="Appli agent" src="index.html?demo#agent"></iframe></div></div>
+  </div>
+
+  <div class="actions">
+    <a class="btn" href="admin.html?demo" target="_blank" rel="noopener">Ouvrir l'espace sécurité (mot de passe <code style="background:rgba(255,255,255,.18);color:#fff">demo-sesame</code>)</a>
+    <button class="btn ghost" id="reset" type="button">Réinitialiser la démo</button>
+    <a class="btn ghost" href="https://github.com/sesame-campus/sesame">Voir le code sur GitHub</a>
+  </div>
+</main>
+
+<p class="foot">Tout se passe dans votre navigateur : aucune donnée n'est envoyée. Projet étudiant ESSEC, non officiel.<br>
+Sur téléphone, vous pouvez aussi ouvrir <a href="index.html?demo#etudiant">la vue étudiant</a> et <a href="index.html?demo#agent">la vue agent</a> en plein écran.</p>
+
+<script>
+  document.getElementById("reset").onclick = function () {
+    try {
+      Object.keys(localStorage).forEach(function (k) { if (k.indexOf("sesame-demo.") === 0) localStorage.removeItem(k); });
+      Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf("sesame-demo.") === 0) sessionStorage.removeItem(k); });
+    } catch (e) {}
+    // L'étudiante d'abord (elle recrée la base), puis l'agent.
+    var etu = document.getElementById("f-etu"), ag = document.getElementById("f-agent");
+    etu.onload = function () { etu.onload = null; ag.contentWindow.location.reload(); };
+    etu.contentWindow.location.reload();
+  };
+</script>
+</body>
+</html>

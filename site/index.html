@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sésame</title>
+<meta name="description" content="Pass campus à usage unique, pour les jours où l'on a oublié sa carte étudiante.">
+<meta name="theme-color" content="#0A2B4E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sésame">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-in">
+    <div class="brand">Sésame<small>Pass campus · prototype étudiant</small></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="tabs" role="tablist">
+    <button id="tab-etu" role="tab" aria-selected="true">Étudiant·e</button>
+    <button id="tab-agent" role="tab" aria-selected="false">Agent</button>
+    <a class="tab-link" href="admin.html">Admin</a>
+  </div>
+
+  <p class="note warn" id="cfgwarn" hidden>L'appli n'est pas encore reliée à sa base de données. Remplissez le fichier <b>config.js</b> (étape 2 du guide), puis remettez le site en ligne.</p>
+
+  <!-- ================= ÉTUDIANT ================= -->
+  <section id="v-etu" class="stack">
+
+    <!-- 1. Adresse mail -->
+    <div class="panel" id="s-email" hidden>
+      <div>
+        <h1 class="h">Carte oubliée ? Votre pass du jour</h1>
+        <p class="lead">Connectez-vous avec votre adresse mail de l'école. Vous recevrez un code de connexion.</p>
+      </div>
+      <form id="f-email" novalidate>
+        <label class="f">Adresse mail étudiante
+          <input type="email" id="e-email" autocomplete="email" inputmode="email" placeholder="prenom.nom@essec.edu">
+          <span class="hint" id="e-hint">Adresse @essec.edu uniquement.</span>
+        </label>
+        <p class="err" id="e-err" hidden></p>
+        <button class="btn" type="submit" id="e-submit">Recevoir mon code</button>
+      </form>
+      <a class="demo-cta" href="demo.html">
+        <span><b>Vous découvrez le projet ?</b>Essayez la démo avec des profils fictifs, sans compte.</span>
+        <span class="demo-cta-go">Essayer la démo →</span>
+      </a>
+    </div>
+
+    <!-- 2. Code reçu -->
+    <div class="panel" id="s-code" hidden>
+      <div>
+        <h2 class="h">Entrez le code reçu par mail</h2>
+        <p class="lead">Envoyé à <b id="c-to"></b>. Regardez aussi dans les courriers indésirables.</p>
+      </div>
+      <form id="f-code" novalidate>
+        <label class="f">Code de connexion
+          <input type="text" id="k-code" class="mono otp" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456">
+        </label>
+        <p class="err" id="k-err" hidden></p>
+        <button class="btn" type="submit" id="k-submit">Valider</button>
+      </form>
+      <div class="row-links">
+        <button class="linkish" id="k-resend">Renvoyer le code</button>
+        <button class="linkish" id="k-change">Changer d'adresse</button>
+      </div>
+    </div>
+
+    <!-- 3. Inscription -->
+    <div class="panel" id="s-reg" hidden>
+      <div>
+        <h2 class="h">Créez votre profil</h2>
+        <p class="lead">Une seule fois. L'agent de sécurité verra votre photo, votre nom et votre numéro étudiant.</p>
+      </div>
+      <form id="f-reg" novalidate>
+        <div class="row2">
+          <label class="f">Prénom<input type="text" id="r-prenom" autocomplete="given-name"></label>
+          <label class="f">Nom<input type="text" id="r-nom" autocomplete="family-name"></label>
+        </div>
+        <label class="f">Numéro étudiant
+          <input type="text" id="r-b00" class="mono" placeholder="B00123456" maxlength="9" autocomplete="off" autocapitalize="characters">
+          <span class="hint">B00 suivi de 6 chiffres</span>
+        </label>
+        <div class="photo-pick">
+          <div class="ph" id="r-ph">Aucune photo</div>
+          <div class="photo-txt">
+            <span class="btn ghost">Prendre ma photo<input type="file" id="r-photo" accept="image/*" capture="user"></span>
+            <span class="hint">Visage de face, bien éclairé. Elle ne pourra plus être modifiée ensuite.</span>
+          </div>
+        </div>
+        <fieldset class="pinset">
+          <legend>Votre code personnel</legend>
+          <p class="hint">6 chiffres, à taper à chaque fois que vous générez un QR. Ne le donnez à personne.</p>
+          <div class="row2">
+            <label class="f">Code<input type="password" id="r-pin" class="mono pin" inputmode="numeric" maxlength="6" autocomplete="new-password"></label>
+            <label class="f">Confirmer<input type="password" id="r-pin2" class="mono pin" inputmode="numeric" maxlength="6" autocomplete="new-password"></label>
+          </div>
+        </fieldset>
+        <label class="check"><input type="checkbox" id="r-consent">
+          <span>J'accepte que mes données soient utilisées pour le contrôle d'accès, comme décrit ci-dessous.</span></label>
+        <details class="privacy-box"><summary>Ce que nous faisons de vos données</summary><div class="privacy"></div></details>
+        <p class="err" id="r-err" hidden></p>
+        <button class="btn" type="submit" id="r-submit">Créer mon pass</button>
+      </form>
+      <button class="linkish center" data-signout>Se déconnecter</button>
+    </div>
+
+    <!-- 3 bis. Consentement (comptes créés avant la v2) -->
+    <div class="panel" id="s-consent" hidden>
+      <div>
+        <h2 class="h">Votre accord pour continuer</h2>
+        <p class="lead">Nous avons ajouté une notice sur l'utilisation de vos données. Lisez-la, puis acceptez pour continuer à utiliser Sésame.</p>
+      </div>
+      <div class="privacy privacy-open"></div>
+      <p class="err" id="g-err" hidden></p>
+      <button class="btn" id="g-accept">J'accepte</button>
+      <button class="linkish center" data-signout>Se déconnecter</button>
+    </div>
+
+    <!-- 3 ter. Nouvelle photo demandée par l'admin -->
+    <div class="panel" id="s-photo" hidden>
+      <div>
+        <h2 class="h">Nouvelle photo demandée</h2>
+        <p class="lead">L'équipe sécurité vous demande une photo plus récente ou plus nette. Visage de face, bien éclairé.</p>
+      </div>
+      <div class="photo-pick">
+        <div class="ph" id="p-ph">Aucune photo</div>
+        <span class="btn ghost">Prendre ma photo<input type="file" id="p-photo" accept="image/*" capture="user"></span>
+      </div>
+      <p class="err" id="p-err" hidden></p>
+      <button class="btn" id="p-save">Enregistrer la photo</button>
+    </div>
+
+    <!-- 3 quater. Création du code personnel -->
+    <div class="panel" id="s-setpin" hidden>
+      <div>
+        <h2 class="h">Choisissez votre code personnel</h2>
+        <p class="lead">6 chiffres. Il vous sera demandé à chaque fois que vous générez un QR, pour être sûr que c'est bien vous. Ne le donnez à personne.</p>
+      </div>
+      <form id="f-setpin" novalidate>
+        <div class="row2">
+          <label class="f">Code<input type="password" id="n-pin" class="mono pin" inputmode="numeric" maxlength="6" autocomplete="new-password"></label>
+          <label class="f">Confirmer<input type="password" id="n-pin2" class="mono pin" inputmode="numeric" maxlength="6" autocomplete="new-password"></label>
+        </div>
+        <p class="err" id="n-err" hidden></p>
+        <button class="btn" type="submit" id="n-submit">Enregistrer mon code</button>
+      </form>
+      <button class="linkish center" data-signout>Se déconnecter</button>
+    </div>
+
+    <!-- 4. Carte + QR -->
+    <div class="stack" id="stu-card" hidden>
+      <div class="panel idcard">
+        <div class="badge">
+          <img id="c-photo" alt="Votre photo">
+          <div class="who"><div class="name" id="c-name"></div><div class="b00" id="c-b00"></div></div>
+        </div>
+        <div class="quota"><span id="c-quota"></span><span class="dots" id="c-dots"></span></div>
+      </div>
+
+      <div class="panel">
+        <div class="qrbox" id="c-qrbox" hidden>
+          <div class="qr-frame">
+            <div id="qr" aria-label="QR code à présenter à l'agent"></div>
+          </div>
+          <div class="qr-live" id="qr-live" hidden>
+            <div class="qr-live-row"><span class="live-dot" aria-hidden="true"></span><b>En direct</b><span class="mono" id="qr-clock"></span><span class="qr-secs" id="qr-secs"></span></div>
+            <div class="qr-track" aria-hidden="true"><i id="qr-bar"></i></div>
+          </div>
+          <div class="code" id="c-code"></div>
+          <p class="meta">Nouveau QR toutes les 10 secondes : une capture d'écran ne passe pas.<br>Usage unique · valable aujourd'hui · montez la luminosité.</p>
+          <button class="linkish" type="button" id="c-hide">Masquer le QR</button>
+        </div>
+        <form class="pinform" id="c-pinform" novalidate hidden>
+          <label class="f">Votre code personnel
+            <input type="password" id="c-pin" class="mono pin otp" inputmode="numeric" maxlength="6" autocomplete="off">
+          </label>
+          <p class="err" id="c-pin-err" hidden></p>
+          <button class="btn big" type="submit" id="c-pin-ok">Valider</button>
+          <button class="linkish center" type="button" id="c-pin-cancel">Annuler</button>
+        </form>
+        <div class="used-state" id="c-used" hidden><strong id="c-used-t"></strong><span>Ce QR ne fonctionne plus. Bonne journée !</span></div>
+        <button class="btn big" id="c-gen" hidden>Générer un QR</button>
+        <div class="alert" id="c-alert" hidden>
+          <strong id="c-alert-t"></strong>
+          <p id="c-alert-p"></p>
+          <p class="reg" id="c-reg" hidden>Registraire : <a href="mailto:registraire@essec.edu">registraire@essec.edu</a></p>
+        </div>
+        <p class="err" id="c-err" hidden></p>
+      </div>
+
+      <div class="note install" id="install" hidden>
+        <div><b>Installez Sésame sur votre téléphone</b><span id="install-txt"></span></div>
+        <div class="install-actions">
+          <button class="btn small" id="install-btn" hidden>Installer</button>
+          <button class="linkish" id="install-x">Plus tard</button>
+        </div>
+      </div>
+
+      <details class="panel mydata" id="mydata">
+        <summary>Mes données</summary>
+        <div class="privacy"></div>
+        <div class="danger">
+          <button class="btn ghost danger-btn" id="d-ask">Supprimer mon compte</button>
+          <div class="confirm" id="d-confirm" hidden>
+            <p>Votre profil, votre photo et vos QR seront supprimés définitivement. L'historique des passages (numéro B00, date et heure) est conservé.</p>
+            <div class="confirm-actions">
+              <button class="btn danger-solid" id="d-yes">Oui, supprimer</button>
+              <button class="linkish" id="d-no">Annuler</button>
+            </div>
+          </div>
+          <p class="err" id="d-err" hidden></p>
+        </div>
+      </details>
+
+      <button class="linkish center" data-signout>Se déconnecter</button>
+    </div>
+  </section>
+
+  <!-- ================= AGENT ================= -->
+  <section id="v-agent" hidden>
+    <div class="panel" id="ag-lock">
+      <div><h2 class="h">Accès agent</h2><p class="lead">Entrez le code PIN du poste de sécurité.</p></div>
+      <form id="f-pin" novalidate>
+        <label class="f">Code PIN<input type="password" id="pin" inputmode="numeric" autocomplete="off"></label>
+        <p class="err" id="pin-err" hidden></p>
+        <button class="btn" type="submit" id="pin-submit">Déverrouiller</button>
+      </form>
+    </div>
+
+    <div class="stack" id="ag-main" hidden>
+      <div class="panel" id="ag-scanner">
+        <div class="cam" id="cam">
+          <video id="video" playsinline muted></video>
+          <div class="frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <button class="torch" id="torch" hidden aria-pressed="false">Lampe</button>
+          <div class="cam-idle" id="cam-idle">
+            <button class="btn big" id="cam-start">Activer la caméra</button>
+            <p class="meta" id="cam-msg">Pointez ensuite le téléphone vers le QR : la vérification est automatique.</p>
+          </div>
+        </div>
+        <p class="busy" id="ag-busy" hidden>Vérification…</p>
+        <div class="or">si la caméra ne marche pas</div>
+        <form class="manual" id="f-man" novalidate>
+          <input type="text" id="man" class="mono" placeholder="K7QF-2MXP-0427" maxlength="14" autocomplete="off" autocapitalize="characters" aria-label="Code écrit sous le QR">
+          <button class="btn" type="submit">Vérifier</button>
+        </form>
+        <span class="btn ghost">Prendre le QR en photo<input type="file" id="snap" accept="image/*" capture="environment"></span>
+      </div>
+
+      <div id="ag-result" class="stack" hidden>
+        <div class="verdict">
+          <div class="band" id="v-band"><b id="v-title"></b><span id="v-sub"></span></div>
+          <div class="badge" id="v-badge" hidden>
+            <img id="v-photo" alt="">
+            <div class="who"><div class="name" id="v-name"></div><div class="b00" id="v-b00"></div></div>
+          </div>
+          <div class="vweek" id="v-week" hidden>
+            <div class="vweek-head">Cette semaine</div>
+            <div class="vweek-stats" id="v-week-stats"></div>
+            <ul class="vweek-list" id="v-week-list"></ul>
+          </div>
+        </div>
+        <button class="btn big next" id="v-next"><span>Scanner le suivant</span><i class="countdown" id="v-count"></i></button>
+      </div>
+
+      <div class="panel" id="ag-hist">
+        <div class="hist-head">
+          <h2 class="h">Passages du jour</h2>
+          <div class="hist-tools">
+            <button class="linkish" id="snd" aria-pressed="true">Son activé</button>
+            <button class="linkish" id="h-refresh">Actualiser</button>
+          </div>
+        </div>
+        <div class="chips" id="h-sum"></div>
+        <ol class="hist" id="h-list"></ol>
+        <p class="meta" id="h-empty" hidden>Aucun scan enregistré aujourd'hui.</p>
+        <p class="err" id="h-err" hidden></p>
+      </div>
+
+      <button class="linkish center" id="ag-lockbtn">Verrouiller le poste</button>
+    </div>
+  </section>
+
+  <footer class="foot">
+    Sésame · prototype étudiant, non officiel · <a href="admin.html">Espace sécurité</a>
+  </footer>
+</main>
+
+<template id="tpl-privacy">
+  <p><b>Qui ?</b> Sésame est un prototype réalisé par des étudiant·es, testé avec l'équipe sécurité du campus. Ce n'est pas un service officiel de l'école.</p>
+  <p><b>Quelles données ?</b> Votre adresse mail, vos prénom et nom, votre numéro étudiant (B00), votre photo, et l'historique de vos passages (date, heure, résultat du scan).</p>
+  <p><b>Pourquoi ?</b> Uniquement pour permettre à l'agent de sécurité de vérifier votre identité les jours où vous avez oublié votre carte.</p>
+  <p><b>Qui les voit ?</b> Les agents de sécurité au moment du scan, l'équipe sécurité dans son espace de suivi, et l'équipe du projet. Elles ne sont ni vendues ni partagées avec d'autres services.</p>
+  <p><b>Où ?</b> Chez notre hébergeur de base de données (Supabase), dans l'Union européenne.</p>
+  <p><b>Combien de temps ?</b> Votre profil et votre photo sont conservés jusqu'à ce que vous supprimiez votre compte. L'historique des passages est conservé pour le suivi de la sécurité, même après la suppression du compte.</p>
+  <p><b>Vos droits.</b> Vous pouvez consulter, corriger ou supprimer vos données : bouton « Supprimer mon compte » dans « Mes données », ou en écrivant à <span class="contact"></span>.</p>
+</template>
+
+<script src="config.js"></script>
+<script src="demo-server.js"></script>
+<script src="common.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="vendor/jsQR.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
