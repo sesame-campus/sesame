@@ -461,9 +461,23 @@
 
     if (isAdmin) { q("#a-pw").placeholder = "Démo : " + DEMO.adminPw; return; }
 
-    q("#pin").placeholder = "Démo : " + DEMO.agentPin;
-    q("#c-pin").placeholder = "Démo : " + DEMO.studentPin;
-    q("#k-code").placeholder = "Démo : " + DEMO.mailCode;
+    // Le code de démo est écrit en clair sous chaque champ, avec un bouton pour le remplir
+    // (dans le champ lui-même, le texte était coupé sur petit écran).
+    function hintUnder(inputSel, label, value) {
+      var input = q(inputSel), p = document.createElement("p");
+      input.placeholder = value;
+      p.className = "demo-fill";
+      p.innerHTML = "<span>" + label + " <code>" + value + "</code></span>";
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = "Remplir";
+      b.onclick = function () { input.value = value; input.dispatchEvent(new Event("input")); input.focus(); };
+      p.appendChild(b);
+      var lbl = input.closest("label") || input;
+      lbl.parentNode.insertBefore(p, lbl.nextSibling);
+    }
+    hintUnder("#c-pin", "Démo : le code de Camille est", DEMO.studentPin);
+    hintUnder("#pin", "Démo : le PIN agent est", DEMO.agentPin);
+    hintUnder("#k-code", "Démo : le code reçu par mail est", DEMO.mailCode);
     var lead = q("#s-code .lead");
     if (lead) lead.insertAdjacentHTML("beforeend", "<br><b>Démo :</b> aucun mail n'est envoyé, le code est <b>" + DEMO.mailCode + "</b>.");
 

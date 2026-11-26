@@ -306,3 +306,7 @@ table.t tr.sel td{background:var(--soft)}
 .demo-scan p{margin:0;font-size:.82rem;color:#3D2A00}
 .demo-scan .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .demo-scan .btn{font-size:.88rem;padding:10px 8px}
+.demo-fill{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0;padding:8px 10px;border-radius:9px;
+  background:#FFF4D6;border:1px solid #F0D58A;color:#3D2A00;font-size:.85rem}
+.demo-fill code{font-family:var(--f-mono);font-weight:700;font-size:.95rem;background:#fff;border:1px solid #F0D58A;border-radius:5px;padding:0 6px;white-space:nowrap}
+.demo-fill button{flex:none;font:700 .85rem var(--f-body);border:0;border-radius:7px;background:#3D2A00;color:#FFF4D6;padding:7px 12px;cursor:pointer}
