@@ -121,8 +121,8 @@ Pour installer sa propre version : suivre [`GUIDE.md`](GUIDE.md) (environ 30 min
 ## L'équipe
 
 - **Lorraine Guarnotta**
-- **Gabriel Borin**
-- **Mathieu Vassette**
+- **Gabrielle Beaurain**
+- **Matthieu Vasset**
 
 Étudiant·es à l'ESSEC Business School. Une question, une idée ? Écrivez-nous : testsesame22@gmail.com
 
